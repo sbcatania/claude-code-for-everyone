@@ -8,30 +8,30 @@ interface SectionWrapperProps {
   title: string;
   description: string;
   children: ReactNode;
+  id?: string;
 }
 
-export function SectionWrapper({ number, title, description, children }: SectionWrapperProps) {
+export function SectionWrapper({ number, title, description, children, id }: SectionWrapperProps) {
   return (
     <motion.section
+      id={id || `section-${number}`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.5 }}
-      className="py-24 px-6 border-b border-border"
+      className="py-20"
     >
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Left side - text content */}
-          <div className="space-y-4">
-            <span className="section-number">{number}</span>
-            <h2 className="text-3xl font-semibold text-foreground">{title}</h2>
-            <p className="text-lg text-muted leading-relaxed">{description}</p>
-          </div>
+      <div className="content-column">
+        {/* Section header */}
+        <div className="mb-8">
+          <div className="section-number">{number}</div>
+          <h2 className="section-title">{title}</h2>
+          <p className="section-description">{description}</p>
+        </div>
 
-          {/* Right side - interactive demo */}
-          <div className="w-full">
-            {children}
-          </div>
+        {/* Section content */}
+        <div className="mt-8">
+          {children}
         </div>
       </div>
     </motion.section>

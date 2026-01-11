@@ -15,15 +15,15 @@ export function ChatBubble({ role, children, animate = true, delay = 0 }: ChatBu
 
   const bubble = (
     <div
-      className={`max-w-[85%] p-4 rounded-2xl ${
+      className={`max-w-[85%] p-4  ${
         isUser
-          ? "bg-accent/20 text-foreground ml-auto rounded-br-md"
-          : "bg-card border border-border text-foreground mr-auto rounded-bl-md"
+          ? "bg-accent/20 text-foreground ml-auto "
+          : "bg-card border border-border text-foreground mr-auto "
       }`}
     >
       {!isUser && (
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+          <div className="w-6 h-6  bg-accent flex items-center justify-center">
             <span className="text-xs font-bold text-background">C</span>
           </div>
           <span className="text-sm font-medium text-accent">Claude Code</span>
@@ -53,7 +53,7 @@ interface ChatContainerProps {
 
 export function ChatContainer({ children }: ChatContainerProps) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4 space-y-4 max-h-96 overflow-y-auto">
+    <div className="bg-card border border-border  p-4 space-y-4 max-h-96 overflow-y-auto">
       {children}
     </div>
   );

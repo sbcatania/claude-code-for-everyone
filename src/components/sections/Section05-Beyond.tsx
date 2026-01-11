@@ -7,8 +7,8 @@ export function Section05Beyond() {
   return (
     <SectionWrapper
       number="05"
-      title="Beyond Code: Claude Does Everything"
-      description="Claude Code isn't just for writing code. It can organize files, scan your system, build tools, generate docs—pretty much anything you can do from the command line."
+      title="Claude can use your whole computer"
+      description="This is what makes Claude Code different from regular AI chat. It's not just generating text—it's running scripts, creating files, opening browsers, and using your actual machine. You can drag files right into the terminal."
     >
       <ExampleCards />
     </SectionWrapper>

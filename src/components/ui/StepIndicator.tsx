@@ -25,7 +25,7 @@ export function StepIndicator({ steps, currentStep, onStepClick }: StepIndicator
             key={index}
             onClick={() => onStepClick?.(index)}
             disabled={!onStepClick}
-            className={`flex items-center gap-3 p-3 rounded-lg transition-all text-left ${
+            className={`flex items-center gap-3 p-3  transition-all text-left ${
               isActive
                 ? "bg-accent/10 border border-accent"
                 : isComplete
@@ -33,7 +33,7 @@ export function StepIndicator({ steps, currentStep, onStepClick }: StepIndicator
                   : "bg-card border border-border hover:border-muted"
             } ${onStepClick ? "cursor-pointer" : "cursor-default"}`}
           >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+            <div className={`w-8 h-8  flex items-center justify-center text-sm font-bold ${
               isActive
                 ? "bg-accent text-background"
                 : isComplete
@@ -85,14 +85,14 @@ export function PlaybackControls({
       <button
         onClick={onPrevious}
         disabled={currentStep === 0}
-        className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-card-hover transition-colors"
+        className="px-4 py-2  bg-card border border-border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-card-hover transition-colors"
       >
         Previous
       </button>
 
       <button
         onClick={onPlay}
-        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+        className={`px-4 py-2  text-sm font-medium transition-colors ${
           isPlaying
             ? "bg-accent/20 text-accent border border-accent"
             : "bg-accent text-background hover:bg-accent/90"
@@ -104,7 +104,7 @@ export function PlaybackControls({
       <button
         onClick={onNext}
         disabled={currentStep >= totalSteps - 1}
-        className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-card-hover transition-colors"
+        className="px-4 py-2  bg-card border border-border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-card-hover transition-colors"
       >
         Next
       </button>

@@ -7,8 +7,8 @@ export function Section02Terminal() {
   return (
     <SectionWrapper
       number="02"
-      title="The Terminal (It's Not Scary)"
-      description="The terminal is just a text-based way to talk to your computer. You type commands, it responds. Think of it as texting your computer—very literally."
+      title="The terminal (yes, it's scary)"
+      description="Let's be honest: the terminal looks intimidating. But it's just a text-based way to talk to your computer. The terminal is always 'in' a folder, and a few basic commands let you navigate around. Once you understand that, everything else clicks."
     >
       <InteractiveTerminal />
     </SectionWrapper>

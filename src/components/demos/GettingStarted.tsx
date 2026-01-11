@@ -1,24 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { CodeBlock } from "../ui/CodeBlock";
+import { useCopyWithToast } from "../ui/Toast";
 
 const installSteps = [
   {
     label: "Install Claude Code",
-    command: "npm install -g @anthropic-ai/claude-code",
-    note: "Requires Node.js 18+"
+    command: "curl -fsSL https://claude.ai/install.sh | sh",
+    note: "Open your terminal and paste this in"
   },
   {
     label: "Authenticate",
     command: "claude login",
-    note: "Opens browser to sign in"
+    note: "Opens browser to sign in with your Anthropic account"
   },
   {
     label: "Start using it",
     command: "claude",
-    note: "Or: claude \"your request here\""
+    note: "Or: claude \"your request here\" for one-off commands"
   }
 ];
 
@@ -39,8 +39,8 @@ const firstPrompts = [
     type: "build"
   },
   {
-    prompt: "Find all the TODOs in this codebase",
-    description: "Automate tedious searches",
+    prompt: "Organize my Downloads folder by file type",
+    description: "Automate tedious tasks on your computer",
     type: "automate"
   },
   {
@@ -51,19 +51,17 @@ const firstPrompts = [
 ];
 
 export function GettingStarted() {
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const copyToClipboard = useCopyWithToast();
 
-  const copyCommand = async (command: string, index: number) => {
-    await navigator.clipboard.writeText(command);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
+  const copyCommand = async (command: string) => {
+    await copyToClipboard(command, "Command copied!");
   };
 
   return (
     <div className="space-y-8">
       {/* Installation steps */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-foreground">Quick Setup</h3>
+        <h3 className="text-lg font-medium text-foreground">Quick setup</h3>
         {installSteps.map((step, index) => (
           <motion.div
             key={index}
@@ -73,26 +71,22 @@ export function GettingStarted() {
             transition={{ delay: index * 0.1 }}
             className="flex items-start gap-4"
           >
-            <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8  bg-accent/20 flex items-center justify-center flex-shrink-0">
               <span className="text-accent font-bold text-sm">{index + 1}</span>
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium mb-2">{step.label}</div>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 font-mono text-sm bg-card border border-border rounded-lg px-4 py-2">
+              <div className="flex items-stretch gap-2">
+                <div className="flex-1 font-mono text-sm bg-card border border-border  px-4 py-2 flex items-center">
                   {step.command}
                 </div>
                 <button
-                  onClick={() => copyCommand(step.command, index)}
-                  className="px-3 py-2 bg-card border border-border rounded-lg hover:bg-card-hover transition-colors"
+                  onClick={() => copyCommand(step.command)}
+                  className="px-3 bg-card border border-border  hover:bg-card-hover transition-colors flex items-center justify-center"
                 >
-                  {copiedIndex === index ? (
-                    <span className="text-accent-green text-xs">Copied!</span>
-                  ) : (
-                    <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  )}
+                  <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
                 </button>
               </div>
               <div className="text-xs text-muted mt-1">{step.note}</div>
@@ -103,7 +97,7 @@ export function GettingStarted() {
 
       {/* First prompts to try */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-foreground">First Prompts to Try</h3>
+        <h3 className="text-lg font-medium text-foreground">First prompts to try</h3>
         <div className="grid gap-3">
           {firstPrompts.map((item, index) => (
             <motion.button
@@ -112,8 +106,8 @@ export function GettingStarted() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              onClick={() => navigator.clipboard.writeText(item.prompt)}
-              className="p-4 bg-card border border-border rounded-lg text-left hover:border-accent transition-all group"
+              onClick={() => copyToClipboard(item.prompt, "Prompt copied!")}
+              className="p-4 bg-card border border-border  text-left hover:border-accent transition-all group"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -122,7 +116,7 @@ export function GettingStarted() {
                   </div>
                   <div className="text-xs text-muted mt-1">{item.description}</div>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded ${
+                <span className={`text-xs px-2 py-1 ${
                   item.type === "explore" ? "bg-blue-500/20 text-blue-400" :
                   item.type === "build" ? "bg-green-500/20 text-green-400" :
                   item.type === "automate" ? "bg-purple-500/20 text-purple-400" :
@@ -138,8 +132,8 @@ export function GettingStarted() {
       </div>
 
       {/* Tips */}
-      <div className="p-4 bg-accent/10 border border-accent/30 rounded-lg">
-        <h4 className="font-medium text-accent mb-3">Pro Tips</h4>
+      <div className="p-4 bg-accent/10 border border-accent/30 ">
+        <h4 className="font-medium text-accent mb-3">Pro tips</h4>
         <ul className="space-y-2 text-sm text-muted">
           <li className="flex items-start gap-2">
             <span className="text-accent">•</span>
