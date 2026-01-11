@@ -24,15 +24,16 @@ The site teaches these core ideas:
 
 | # | Section | What You Learn |
 |---|---------|----------------|
-| 01 | What is Claude Code? | Side-by-side comparison with traditional AI chat |
-| 02 | The Terminal | Interactive fake terminal to demystify the command line |
-| 03 | Talking to Claude | How vague vs specific prompts both work |
-| 04 | Interview Technique | Have Claude ask YOU clarifying questions |
-| 05 | Beyond Code | Real examples: config scanners, CLI tools, auto-docs |
-| 06 | Build Something Real | Step-through building a Notion-like app |
-| 07 | Playwright MCP | Self-testing loops with browser automation |
-| 08 | Putting It Together | Complete workflow walkthroughs |
-| 09 | Getting Started | Installation and first prompts to try |
+| 01 | What is Claude Code? Codex? | Side-by-side comparison with traditional AI chat |
+| 02 | The terminal - is it scary? | Interactive fake terminal to demystify the command line |
+| 03 | Talking to Claude Code | How vague vs specific prompts both work |
+| 04 | The interview technique | Have Claude ask YOU clarifying questions |
+| 05 | Claude can use your whole computer | Real examples: config scanners, CLI tools, auto-docs |
+| 06 | Build something real | Step-through building a Notion-like app |
+| 07 | Self-testing with Playwright | Self-testing loops with browser automation |
+| 08 | Putting it all together | Complete workflow walkthroughs |
+| 09 | Getting started | Installation and first prompts to try |
+| 10 | Advanced usage tips | Tips to get more out of Claude Code once you know the basics |
 
 ## Tech Stack
 
