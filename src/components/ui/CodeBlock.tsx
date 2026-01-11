@@ -21,7 +21,7 @@ export function CodeBlock({ code, language = "bash", filename, showLineNumbers =
   };
 
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
+    <div className="bg-card border border-border  overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-card-hover border-b border-border">
         <div className="flex items-center gap-2">
@@ -34,7 +34,7 @@ export function CodeBlock({ code, language = "bash", filename, showLineNumbers =
         </div>
         <button
           onClick={copyToClipboard}
-          className="text-xs text-muted hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-border"
+          className="text-xs text-muted hover:text-foreground transition-colors px-2 py-1 hover:bg-border"
         >
           <AnimatePresence mode="wait">
             {copied ? (

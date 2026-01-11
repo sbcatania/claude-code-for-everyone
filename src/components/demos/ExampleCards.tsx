@@ -2,45 +2,44 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ClaudeCodeDemo, UserMessage, ClaudeMessage, ActionMessage } from "../ui/ClaudeCodeDemo";
 
 const examples = [
   {
+    id: "convert",
+    title: "One-off file tool",
+    emoji: "📄",
+    prompt: "Convert this CSV to JSON",
+    attachment: "sales-data.csv",
+    steps: [
+      { action: "Reading", detail: "Parsing sales-data.csv (2,340 rows)" },
+      { action: "Converting", detail: "Transforming to JSON format" },
+      { action: "Writing", detail: "Created sales-data.json" },
+      { action: "Done", detail: "File ready! You can also run: node convert.js anytime" }
+    ]
+  },
+  {
+    id: "explain",
+    title: "Explain & visualize",
+    emoji: "🗺️",
+    prompt: "Explain how our auth system works and make me a simple HTML diagram",
+    steps: [
+      { action: "Scanning", detail: "Found auth logic in src/auth/, middleware/, and api/..." },
+      { action: "Analyzing", detail: "Mapping OAuth flow, session handling, and permissions" },
+      { action: "Creating", detail: "Building interactive diagram at auth-explainer.html" },
+      { action: "Done", detail: "Open auth-explainer.html in your browser to explore" }
+    ]
+  },
+  {
     id: "config",
-    title: "Config File Scanner",
+    title: "System scanner",
     emoji: "🔍",
-    prompt: "Scan my system for important config files, make a website that explains each one with checkboxes, then zip up the ones I select",
+    prompt: "Find all my config files and show me what each one does",
     steps: [
       { action: "Scanning", detail: "Finding config files across your system..." },
       { action: "Found", detail: "~/.zshrc, ~/.gitconfig, ~/.ssh/config, and 12 more" },
-      { action: "Creating", detail: "Building interactive website at config-viewer/index.html" },
-      { action: "Ready", detail: "Open config-viewer/index.html to review and select files" },
-      { action: "Zipped", detail: "Created selected-configs.zip with your choices" }
-    ]
-  },
-  {
-    id: "tool",
-    title: "Build a CLI Tool",
-    emoji: "🛠️",
-    prompt: "I need a tool that converts CSV files to JSON",
-    steps: [
-      { action: "Planning", detail: "Creating a Node.js CLI tool with csv-parser" },
-      { action: "Writing", detail: "csv-to-json/index.js with argument parsing" },
-      { action: "Adding", detail: "Support for custom delimiters and output formatting" },
-      { action: "Testing", detail: "Running with sample.csv → sample.json" },
-      { action: "Done", detail: "Run with: node csv-to-json/index.js input.csv" }
-    ]
-  },
-  {
-    id: "docs",
-    title: "Auto-Generate Docs",
-    emoji: "📚",
-    prompt: "Find all the API endpoints in this codebase and document them",
-    steps: [
-      { action: "Searching", detail: "Scanning for route definitions..." },
-      { action: "Found", detail: "23 endpoints across 8 route files" },
-      { action: "Analyzing", detail: "Extracting parameters, types, and responses" },
-      { action: "Writing", detail: "Creating API-DOCS.md with full documentation" },
-      { action: "Complete", detail: "Documentation ready with examples for each endpoint" }
+      { action: "Creating", detail: "Building config-viewer.html with explanations" },
+      { action: "Ready", detail: "Open config-viewer.html to explore your configs" }
     ]
   }
 ];
@@ -78,7 +77,7 @@ export function ExampleCards() {
         <motion.div
           key={example.id}
           layout
-          className="bg-card border border-border rounded-xl overflow-hidden interactive-card cursor-pointer"
+          className="bg-card border border-border overflow-hidden interactive-card cursor-pointer"
           onClick={() => handleExpand(example.id)}
         >
           {/* Header */}
@@ -109,41 +108,54 @@ export function ExampleCards() {
                 className="border-t border-border"
               >
                 <div className="p-4 bg-background/50">
-                  {/* Prompt */}
-                  <div className="mb-4 p-3 bg-card rounded-lg border border-border">
-                    <span className="text-xs text-muted block mb-1">Your request:</span>
-                    <p className="text-sm text-foreground">&quot;{example.prompt}&quot;</p>
-                  </div>
+                  <ClaudeCodeDemo showInput>
+                    {/* User message with optional attachment */}
+                    <UserMessage>
+                      <div>
+                        <p>{example.prompt}</p>
+                        {example.attachment && (
+                          <div className="mt-2 p-2 bg-muted/20 border border-dashed border-muted/50 text-xs text-muted flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            {example.attachment} (dragged into terminal)
+                          </div>
+                        )}
+                      </div>
+                    </UserMessage>
 
-                  {/* Steps */}
-                  <div className="space-y-2">
-                    {example.steps.map((step, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{
-                          opacity: index <= playingStep ? 1 : 0.3,
-                          x: 0
-                        }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                        className="flex items-start gap-3"
-                      >
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
-                          index <= playingStep ? "bg-accent-green text-background" : "bg-border text-muted"
-                        }`}>
-                          {index <= playingStep ? "✓" : index + 1}
-                        </div>
-                        <div>
-                          <span className={`text-sm font-medium ${
-                            index <= playingStep ? "text-accent-green" : "text-muted"
-                          }`}>
-                            {step.action}
-                          </span>
-                          <p className="text-sm text-muted">{step.detail}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
+                    {/* Claude's response with steps */}
+                    <ClaudeMessage>
+                      <div className="space-y-2">
+                        {example.steps.map((step, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{
+                              opacity: index <= playingStep ? 1 : 0.3,
+                              x: 0
+                            }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                            className="flex items-start gap-2"
+                          >
+                            <div className={`w-4 h-4 flex items-center justify-center text-xs flex-shrink-0 ${
+                              index <= playingStep ? "bg-accent-green text-background" : "bg-border text-muted"
+                            }`}>
+                              {index <= playingStep ? "✓" : index + 1}
+                            </div>
+                            <div>
+                              <span className={`text-sm font-medium ${
+                                index <= playingStep ? "text-accent-green" : "text-muted"
+                              }`}>
+                                {step.action}
+                              </span>
+                              <span className="text-sm text-muted ml-1">{step.detail}</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </ClaudeMessage>
+                  </ClaudeCodeDemo>
                 </div>
               </motion.div>
             )}
@@ -152,13 +164,13 @@ export function ExampleCards() {
       ))}
 
       {/* Build your own prompt */}
-      <div className="mt-6 p-4 bg-accent/10 border border-accent/30 rounded-xl">
-        <h4 className="font-medium text-accent mb-2">Try it yourself</h4>
-        <p className="text-sm text-muted mb-3">Think of something tedious you do on your computer. Claude can probably automate it.</p>
+      <div className="mt-6 p-4 bg-accent/10 border border-accent/30">
+        <h4 className="text-sm text-accent mb-2">Try it yourself</h4>
+        <p className="text-xs text-muted mb-3">Think of something tedious you do on your computer. Claude can probably automate it.</p>
         <div className="flex gap-2 flex-wrap">
-          <span className="text-xs px-2 py-1 bg-card rounded-full text-muted">&quot;Organize my downloads folder&quot;</span>
-          <span className="text-xs px-2 py-1 bg-card rounded-full text-muted">&quot;Rename all these files&quot;</span>
-          <span className="text-xs px-2 py-1 bg-card rounded-full text-muted">&quot;Find all TODOs in my code&quot;</span>
+          <span className="text-xs px-2 py-1 bg-card text-muted">&quot;Organize my downloads folder&quot;</span>
+          <span className="text-xs px-2 py-1 bg-card text-muted">&quot;Rename all these files&quot;</span>
+          <span className="text-xs px-2 py-1 bg-card text-muted">&quot;Summarize what changed this week&quot;</span>
         </div>
       </div>
     </div>

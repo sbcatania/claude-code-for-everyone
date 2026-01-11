@@ -2,25 +2,25 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChatBubble, ChatContainer } from "../ui/ChatBubble";
+import { ClaudeCodeDemo, UserMessage, ClaudeMessage, ActionMessage } from "../ui/ClaudeCodeDemo";
 
 const examples = [
   {
     id: "vague",
     label: "Vague",
-    userMessage: "Make the button look better",
+    userMessage: "This checkout flow feels confusing",
     claudeResponse: (
       <>
-        <p>I&apos;d be happy to improve the button! A few quick questions:</p>
+        <p>I&apos;d love to help improve the checkout flow! Let me ask a few questions:</p>
         <ul className="mt-2 space-y-1 text-sm">
-          <li>- What style are you going for? (modern, minimal, playful?)</li>
-          <li>- Any specific colors in mind, or should I match your existing theme?</li>
-          <li>- Should it have any hover/click animations?</li>
+          <li>- What part feels most confusing? (forms, payment, review?)</li>
+          <li>- Are users dropping off at a specific step?</li>
+          <li>- Any competitor checkouts you like the feel of?</li>
         </ul>
-        <p className="mt-2 text-muted text-xs">Or I can just make it look more polished with better spacing, colors, and a subtle shadow - want me to try that?</p>
+        <p className="mt-2 text-muted text-xs">Or I can scan through the checkout code and suggest improvements based on common UX patterns - want me to start there?</p>
       </>
     ),
-    note: "Claude asks clarifying questions - but can also just try something"
+    note: "Claude asks clarifying questions - or can just start exploring"
   },
   {
     id: "specific",
@@ -51,29 +51,39 @@ const examples = [
   },
   {
     id: "context",
-    label: "With Context",
-    userMessage: "I'm building a finance app and the button feels too playful",
+    label: "With screenshot",
+    userMessage: (
+      <div>
+        <p>Make this button match this design</p>
+        <div className="mt-2 p-2 bg-muted/20 border border-dashed border-muted/50 text-xs text-muted flex items-center gap-2">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          screenshot.png (dragged into terminal)
+        </div>
+      </div>
+    ),
     claudeResponse: (
       <>
-        <p>Got it - for a finance app you probably want something more professional and trustworthy. Let me update the button.</p>
+        <p>I can see the design - it&apos;s a gradient button with a subtle glow effect. Let me match that.</p>
         <div className="mt-3 space-y-2">
           <div className="flex items-center gap-2 text-accent-green text-xs">
             <span className="w-2 h-2 rounded-full bg-accent-green" />
-            Changed to slate-800 background (more professional)
+            Added gradient: from-purple-500 to-pink-500
           </div>
           <div className="flex items-center gap-2 text-accent-green text-xs">
             <span className="w-2 h-2 rounded-full bg-accent-green" />
-            Reduced border-radius to 4px (less playful)
+            Added glow shadow on hover
           </div>
           <div className="flex items-center gap-2 text-accent-green text-xs">
             <span className="w-2 h-2 rounded-full bg-accent-green" />
-            Added subtle shadow for depth
+            Matched the exact border-radius (12px)
           </div>
         </div>
-        <p className="mt-3 text-muted text-xs">This matches the professional aesthetic of apps like Stripe or Mercury.</p>
+        <p className="mt-3 text-muted text-xs">The button now matches your screenshot. Want me to apply this style to other buttons too?</p>
       </>
     ),
-    note: "Give context about your goals - Claude makes smart decisions"
+    note: "Drag screenshots right into the terminal - Claude can see images!"
   }
 ];
 
@@ -84,12 +94,12 @@ export function VagueVsSpecific() {
   return (
     <div className="space-y-4">
       {/* Toggle buttons */}
-      <div className="flex gap-2 p-1 bg-card border border-border rounded-lg">
+      <div className="flex gap-1 p-1 bg-card border border-border">
         {examples.map((example) => (
           <button
             key={example.id}
             onClick={() => setSelected(example.id)}
-            className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${
+            className={`flex-1 py-1.5 px-3 text-xs transition-all ${
               selected === example.id
                 ? "bg-accent/20 text-accent"
                 : "text-muted hover:text-foreground"
@@ -100,7 +110,7 @@ export function VagueVsSpecific() {
         ))}
       </div>
 
-      {/* Chat display */}
+      {/* Chat display with terminal chrome */}
       <AnimatePresence mode="wait">
         <motion.div
           key={selected}
@@ -109,23 +119,19 @@ export function VagueVsSpecific() {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
         >
-          <ChatContainer>
-            <ChatBubble role="user" animate={false}>
-              {current.userMessage}
-            </ChatBubble>
-            <ChatBubble role="assistant" animate={false}>
-              {current.claudeResponse}
-            </ChatBubble>
-          </ChatContainer>
+          <ClaudeCodeDemo showInput>
+            <UserMessage>{current.userMessage}</UserMessage>
+            <ClaudeMessage>{current.claudeResponse}</ClaudeMessage>
+          </ClaudeCodeDemo>
         </motion.div>
       </AnimatePresence>
 
       {/* Note */}
-      <div className="flex items-center gap-2 p-3 bg-accent/10 border border-accent/30 rounded-lg">
-        <svg className="w-5 h-5 text-accent flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="flex items-center gap-2 p-3 bg-accent/10 border border-accent/30">
+        <svg className="w-4 h-4 text-accent flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span className="text-sm text-foreground">{current.note}</span>
+        <span className="text-xs text-foreground">{current.note}</span>
       </div>
     </div>
   );

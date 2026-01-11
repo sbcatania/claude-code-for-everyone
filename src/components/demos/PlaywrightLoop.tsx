@@ -83,17 +83,80 @@ export function PlaywrightLoop() {
   return (
     <div className="space-y-6">
       {/* Loop visualization */}
-      <div className="relative p-8 bg-card rounded-xl border border-border">
+      <div className="relative p-8 bg-card  border border-border">
         {/* Circular layout */}
         <div className="relative w-64 h-64 mx-auto">
           {/* Center circle */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center">
+            <div className="w-20 h-20  bg-accent/20 flex items-center justify-center">
               <span className="text-accent font-bold">
                 {iteration === 2 && currentStep === loopSteps.length - 1 ? "✓" : `#${iteration}`}
               </span>
             </div>
           </div>
+
+          {/* Arrows between steps */}
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 256 256">
+            <defs>
+              <marker
+                id="arrowhead"
+                markerWidth="6"
+                markerHeight="6"
+                refX="5"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L6,3 L0,6 Z" fill="currentColor" className="text-muted/40" />
+              </marker>
+            </defs>
+            {loopSteps.map((_, index) => {
+              const n = loopSteps.length;
+              const angle1 = (index / n) * 2 * Math.PI - Math.PI / 2;
+              const nextIndex = (index + 1) % n;
+              const angle2 = (nextIndex / n) * 2 * Math.PI - Math.PI / 2;
+              const radius = 100;
+              const centerX = 128;
+              const centerY = 128;
+
+              // Angular offset to start/end arrows away from node centers
+              const angularOffset = 0.25;
+
+              // Start point: slightly clockwise from current node
+              const startX = centerX + Math.cos(angle1 + angularOffset) * radius;
+              const startY = centerY + Math.sin(angle1 + angularOffset) * radius;
+
+              // End point: slightly counter-clockwise from next node
+              const endX = centerX + Math.cos(angle2 - angularOffset) * radius;
+              const endY = centerY + Math.sin(angle2 - angularOffset) * radius;
+
+              // Calculate midpoint angle properly (handling wrap-around)
+              let midAngle;
+              if (index === n - 1) {
+                // Last arrow wraps around, so go the "short way" (clockwise)
+                midAngle = angle1 + (2 * Math.PI + angle2 - angle1) / 2;
+              } else {
+                midAngle = (angle1 + angle2) / 2;
+              }
+
+              // Control point outside the circle for outward curve
+              const controlRadius = radius + 20;
+              const controlX = centerX + Math.cos(midAngle) * controlRadius;
+              const controlY = centerY + Math.sin(midAngle) * controlRadius;
+
+              return (
+                <path
+                  key={index}
+                  d={`M ${startX} ${startY} Q ${controlX} ${controlY} ${endX} ${endY}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 2"
+                  className="text-muted/40"
+                  markerEnd="url(#arrowhead)"
+                />
+              );
+            })}
+          </svg>
 
           {/* Step nodes */}
           {loopSteps.map((step, index) => {
@@ -118,7 +181,7 @@ export function PlaywrightLoop() {
                 transition={{ duration: 0.3 }}
               >
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-lg transition-all ${
+                  className={`w-12 h-12  flex items-center justify-center text-lg transition-all ${
                     isActive
                       ? "bg-accent shadow-lg shadow-accent/30"
                       : isPast
@@ -141,7 +204,7 @@ export function PlaywrightLoop() {
           <p className="text-sm text-muted mt-1">
             {loopSteps[currentStep].description}
           </p>
-          <div className="mt-3 p-2 bg-background rounded-lg font-mono text-xs text-accent">
+          <div className="mt-3 p-2 bg-background  font-mono text-xs text-accent">
             {loopSteps[currentStep].detail}
           </div>
         </div>
@@ -151,13 +214,13 @@ export function PlaywrightLoop() {
       <div className="flex items-center justify-center gap-4">
         <button
           onClick={handlePlay}
-          className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-6 py-2  font-medium transition-colors ${
             isPlaying
               ? "bg-accent/20 text-accent border border-accent"
               : "bg-accent text-background hover:bg-accent/90"
           }`}
         >
-          {isPlaying ? "Pause" : "Watch the Loop"}
+          {isPlaying ? "Pause" : "Watch the loop"}
         </button>
       </div>
 
@@ -166,7 +229,7 @@ export function PlaywrightLoop() {
         {loopSteps.map((step, index) => (
           <div
             key={step.id}
-            className={`p-3 rounded-lg border transition-all ${
+            className={`p-3  border transition-all ${
               index === currentStep
                 ? "bg-accent/10 border-accent"
                 : "bg-card border-border"
@@ -182,7 +245,7 @@ export function PlaywrightLoop() {
       </div>
 
       {/* Setup note */}
-      <div className="p-4 bg-card border border-border rounded-lg">
+      <div className="p-4 bg-card border border-border ">
         <h5 className="font-medium text-sm mb-2">Enable Playwright MCP</h5>
         <p className="text-xs text-muted">
           To use this feature, enable the Playwright MCP server in Claude Code settings.
