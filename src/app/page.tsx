@@ -108,7 +108,7 @@ export default function Home() {
             <h2 className="section-title mb-4">Ready to get started?</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="https://docs.anthropic.com/en/docs/claude-code"
+                href="https://code.claude.com/docs/en/overview"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 bg-accent text-background font-medium hover:bg-accent/90 transition-colors text-center"

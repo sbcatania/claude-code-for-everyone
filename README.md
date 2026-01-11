@@ -1,6 +1,6 @@
 # Claude Code for Everyone
 
-An interactive, single-page website that teaches people how to use [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and terminal-based AI coding agents. No coding experience required.
+An interactive, single-page website that teaches people how to use [Claude Code](https://code.claude.com/docs/en/overview) and terminal-based AI coding agents. No coding experience required.
 
 **Live site:** [claude-code-for-everyone.vercel.app](https://claude-code-for-everyone.vercel.app)
 
@@ -64,8 +64,8 @@ If you find bugs or want to improve it, PRs welcome!
 
 ## Credits
 
-- Inspired by [How Terminals Work](https://how-terminals-work.vercel.app/) by [@jborean](https://twitter.com/jborean)
-- Built with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) by Anthropic
+- Inspired by [How Terminals Work](https://how-terminals-work.vercel.app/) by [@brianlovin](https://github.com/brianlovin)
+- Built with [Claude Code](https://code.claude.com/docs/en/overview) by Anthropic
 
 ## License
 
