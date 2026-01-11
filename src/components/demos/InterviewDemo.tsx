@@ -4,49 +4,50 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClaudeCodeDemo, UserMessage, ClaudeMessage } from "../ui/ClaudeCodeDemo";
 import { useCopyWithToast } from "../ui/Toast";
+import { StreamingText } from "../ui/StreamingText";
 
 const INTERVIEW_PROMPT = "Ask me any questions about how you should do this before you get started";
 
 const conversation = [
   {
     role: "user" as const,
-    content: `I want to add a new feature to track user activity. ${INTERVIEW_PROMPT}`
+    text: `I want to add a new feature to track user activity. ${INTERVIEW_PROMPT}`,
+    content: null
   },
   {
     role: "assistant" as const,
+    text: "I'd love to help you build activity tracking! Let me ask a few questions to make sure I build exactly what you need:",
     content: (
-      <>
-        <p>I&apos;d love to help you build activity tracking! Let me ask a few questions to make sure I build exactly what you need:</p>
-        <div className="mt-3 space-y-3 bg-background/30 p-3 ">
-          <div>
-            <span className="text-accent font-medium">1. What activities should we track?</span>
-            <p className="text-sm text-muted mt-1">Page views, button clicks, form submissions, time on page, or something else?</p>
-          </div>
-          <div>
-            <span className="text-accent font-medium">2. Who needs to see this data?</span>
-            <p className="text-sm text-muted mt-1">Admins only? Users can see their own? Public dashboard?</p>
-          </div>
-          <div>
-            <span className="text-accent font-medium">3. How should we store it?</span>
-            <p className="text-sm text-muted mt-1">Are you using a database already? Do you have analytics tools like Mixpanel or Amplitude?</p>
-          </div>
-          <div>
-            <span className="text-accent font-medium">4. Any privacy considerations?</span>
-            <p className="text-sm text-muted mt-1">GDPR compliance, user consent, anonymization needs?</p>
-          </div>
+      <div className="mt-3 space-y-3 bg-background/30 p-3 ">
+        <div>
+          <span className="text-accent font-medium">1. What activities should we track?</span>
+          <p className="text-sm text-muted mt-1">Page views, button clicks, form submissions, time on page, or something else?</p>
         </div>
-      </>
+        <div>
+          <span className="text-accent font-medium">2. Who needs to see this data?</span>
+          <p className="text-sm text-muted mt-1">Admins only? Users can see their own? Public dashboard?</p>
+        </div>
+        <div>
+          <span className="text-accent font-medium">3. How should we store it?</span>
+          <p className="text-sm text-muted mt-1">Are you using a database already? Do you have analytics tools like Mixpanel or Amplitude?</p>
+        </div>
+        <div>
+          <span className="text-accent font-medium">4. Any privacy considerations?</span>
+          <p className="text-sm text-muted mt-1">GDPR compliance, user consent, anonymization needs?</p>
+        </div>
+      </div>
     )
   },
   {
     role: "user" as const,
-    content: "Track button clicks, admins see it, we use Postgres, and yes GDPR compliance needed"
+    text: "Track button clicks, admins see it, we use Postgres, and yes GDPR compliance needed",
+    content: null
   },
   {
     role: "assistant" as const,
+    text: "Perfect! I'll build a GDPR-compliant button click tracker with an admin dashboard. Here's my plan:",
     content: (
       <>
-        <p>Perfect! I&apos;ll build a GDPR-compliant button click tracker with an admin dashboard. Here&apos;s my plan:</p>
         <div className="mt-3 space-y-2 text-sm">
           <div className="flex items-center gap-2">
             <span className="w-5 h-5 bg-accent/20 text-accent text-xs flex items-center justify-center">1</span>
@@ -74,6 +75,8 @@ const conversation = [
 export function InterviewDemo() {
   const [visibleMessages, setVisibleMessages] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [streamingMessage, setStreamingMessage] = useState(0);
+  const [showContent, setShowContent] = useState<number[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const copyToClipboard = useCopyWithToast();
 
@@ -82,24 +85,37 @@ export function InterviewDemo() {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [visibleMessages]);
+  }, [visibleMessages, showContent]);
 
-  useEffect(() => {
-    if (isPlaying && visibleMessages < conversation.length) {
-      const timer = setTimeout(() => {
-        setVisibleMessages(v => v + 1);
-      }, 2000);
-      return () => clearTimeout(timer);
-    } else if (visibleMessages >= conversation.length) {
-      setIsPlaying(false);
+  const handleStreamComplete = (messageIndex: number) => {
+    // Show the content section after text streams
+    const msg = conversation[messageIndex];
+    if (msg.content) {
+      setTimeout(() => {
+        setShowContent(prev => [...prev, messageIndex]);
+      }, 100);
     }
-  }, [isPlaying, visibleMessages]);
+
+    // Move to next message if playing
+    if (isPlaying) {
+      setTimeout(() => {
+        if (messageIndex + 1 < conversation.length) {
+          setVisibleMessages(messageIndex + 2);
+          setStreamingMessage(messageIndex + 1);
+        } else {
+          setIsPlaying(false);
+        }
+      }, 500);
+    }
+  };
 
   const handlePlay = () => {
     if (visibleMessages >= conversation.length) {
       setVisibleMessages(1);
+      setStreamingMessage(0);
+      setShowContent([]);
     }
-    setIsPlaying(!isPlaying);
+    setIsPlaying(true);
   };
 
   return (
@@ -118,20 +134,54 @@ export function InterviewDemo() {
       <ClaudeCodeDemo showInput>
         <div ref={containerRef} className="max-h-64 overflow-y-auto">
           <AnimatePresence>
-            {conversation.slice(0, visibleMessages).map((msg, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {msg.role === "user" ? (
-                  <UserMessage>{msg.content}</UserMessage>
-                ) : (
-                  <ClaudeMessage>{msg.content}</ClaudeMessage>
-                )}
-              </motion.div>
-            ))}
+            {conversation.slice(0, visibleMessages).map((msg, index) => {
+              const isCurrentlyStreaming = isPlaying && streamingMessage === index;
+              const hasCompletedStreaming = !isPlaying || streamingMessage > index || showContent.includes(index);
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {msg.role === "user" ? (
+                    <UserMessage>
+                      {isCurrentlyStreaming ? (
+                        <StreamingText
+                          text={msg.text}
+                          speed={12}
+                          onComplete={() => handleStreamComplete(index)}
+                        />
+                      ) : msg.text}
+                    </UserMessage>
+                  ) : (
+                    <ClaudeMessage>
+                      <div>
+                        {isCurrentlyStreaming ? (
+                          <StreamingText
+                            text={msg.text}
+                            speed={10}
+                            onComplete={() => handleStreamComplete(index)}
+                          />
+                        ) : (
+                          <p>{msg.text}</p>
+                        )}
+                        {hasCompletedStreaming && msg.content && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {msg.content}
+                          </motion.div>
+                        )}
+                      </div>
+                    </ClaudeMessage>
+                  )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
       </ClaudeCodeDemo>
@@ -143,20 +193,26 @@ export function InterviewDemo() {
         </span>
         <div className="flex gap-2">
           <button
-            onClick={() => setVisibleMessages(1)}
+            onClick={() => {
+              setVisibleMessages(1);
+              setStreamingMessage(0);
+              setShowContent([]);
+              setIsPlaying(false);
+            }}
             className="px-3 py-1.5 text-sm  bg-card border border-border hover:bg-card-hover transition-colors"
           >
             Reset
           </button>
           <button
             onClick={handlePlay}
+            disabled={isPlaying}
             className={`px-4 py-1.5 text-sm  font-medium transition-colors ${
               isPlaying
-                ? "bg-accent/20 text-accent border border-accent"
-                : "bg-accent text-background"
+                ? "bg-muted/20 text-muted cursor-not-allowed"
+                : "bg-accent text-background hover:bg-accent/90"
             }`}
           >
-            {isPlaying ? "Pause" : visibleMessages >= conversation.length ? "Replay" : "Play"}
+            {isPlaying ? "Playing..." : visibleMessages >= conversation.length ? "Replay" : "Play"}
           </button>
         </div>
       </div>

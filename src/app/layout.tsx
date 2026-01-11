@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { EditMode } from "@/components/EditMode";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          {process.env.NODE_ENV === "development" && <EditMode />}
         </Providers>
       </body>
     </html>

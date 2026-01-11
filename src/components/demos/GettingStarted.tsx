@@ -34,7 +34,7 @@ const firstPrompts = [
     type: "explore"
   },
   {
-    prompt: "Help me build a simple todo list",
+    prompt: "Help me build a simple prototype that...",
     description: "Create something from scratch",
     type: "build"
   },
@@ -137,7 +137,7 @@ export function GettingStarted() {
         <ul className="space-y-2 text-sm text-muted">
           <li className="flex items-start gap-2">
             <span className="text-accent">•</span>
-            <span>Start vague - Claude will ask clarifying questions</span>
+            <span>Feel free to start vague - Claude will ask clarifying questions</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-accent">•</span>
@@ -149,7 +149,7 @@ export function GettingStarted() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-accent">•</span>
-            <span>Think of it as a capable coworker, not just a chatbot</span>
+            <span>Think of it as talking to your computer, not just a chatbot</span>
           </li>
         </ul>
       </div>

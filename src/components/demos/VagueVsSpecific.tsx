@@ -83,7 +83,7 @@ const examples = [
         <p className="mt-3 text-muted text-xs">The button now matches your screenshot. Want me to apply this style to other buttons too?</p>
       </>
     ),
-    note: "Drag screenshots right into the terminal - Claude can see images!"
+    note: "Drag screenshots or paste lots of text right into the terminal - Claude can see images!"
   }
 ];
 

@@ -173,12 +173,12 @@ export function Terminal({
           {/* Visual display */}
           <div className="flex items-center cursor-text">
             <span className="text-accent-green mr-1">$</span>
-            {!isTyping && <span className="terminal-cursor" />}
             {input ? (
               <span className="text-foreground">{input}</span>
             ) : (
               <span className="text-muted/50">{placeholder}</span>
             )}
+            {!isTyping && <span className="terminal-cursor" />}
           </div>
         </div>
       )}

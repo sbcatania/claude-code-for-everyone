@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClaudeCodeDemo, UserMessage, ClaudeMessage, ActionMessage } from "../ui/ClaudeCodeDemo";
+import { StreamingText } from "../ui/StreamingText";
 
 const scenarios = [
   {
@@ -99,32 +100,39 @@ export function WorkflowScenario() {
   const [selectedScenario, setSelectedScenario] = useState(scenarios[0].id);
   const [visibleSteps, setVisibleSteps] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [streamingStep, setStreamingStep] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const scenario = scenarios.find(s => s.id === selectedScenario)!;
+
+  const handleStreamComplete = () => {
+    if (!isPlaying) return;
+
+    // Move to next step after streaming completes
+    setTimeout(() => {
+      if (streamingStep + 1 < scenario.steps.length) {
+        setVisibleSteps(streamingStep + 2);
+        setStreamingStep(streamingStep + 1);
+      } else {
+        setIsPlaying(false);
+      }
+    }, 300);
+  };
 
   const handlePlay = () => {
     if (visibleSteps >= scenario.steps.length) {
       setVisibleSteps(1);
+      setStreamingStep(0);
     }
     setIsPlaying(true);
-
-    let step = visibleSteps;
-    const interval = setInterval(() => {
-      step++;
-      if (step >= scenario.steps.length) {
-        clearInterval(interval);
-        setIsPlaying(false);
-        setVisibleSteps(scenario.steps.length);
-      } else {
-        setVisibleSteps(step + 1);
-      }
-    }, 1500);
+    setStreamingStep(visibleSteps - 1);
   };
 
   const handleScenarioChange = (id: string) => {
     setSelectedScenario(id);
     setVisibleSteps(1);
     setIsPlaying(false);
+    setStreamingStep(0);
   };
 
   return (
@@ -155,26 +163,54 @@ export function WorkflowScenario() {
         {/* Steps */}
         <div className="space-y-2 max-h-64 overflow-y-auto">
           <AnimatePresence>
-            {scenario.steps.slice(0, visibleSteps).map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {step.type === "claude" && (
-                  <ClaudeMessage>
-                    <div className="whitespace-pre-line">{step.content}</div>
-                  </ClaudeMessage>
-                )}
-                {step.type === "user" && (
-                  <UserMessage>{step.content}</UserMessage>
-                )}
-                {step.type === "action" && (
-                  <ActionMessage>{step.content}</ActionMessage>
-                )}
-              </motion.div>
-            ))}
+            {scenario.steps.slice(0, visibleSteps).map((step, index) => {
+              const isCurrentlyStreaming = isPlaying && streamingStep === index;
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {step.type === "claude" && (
+                    <ClaudeMessage>
+                      <div className="whitespace-pre-line">
+                        {isCurrentlyStreaming ? (
+                          <StreamingText
+                            text={step.content}
+                            speed={8}
+                            onComplete={handleStreamComplete}
+                          />
+                        ) : step.content}
+                      </div>
+                    </ClaudeMessage>
+                  )}
+                  {step.type === "user" && (
+                    <UserMessage>
+                      {isCurrentlyStreaming ? (
+                        <StreamingText
+                          text={step.content}
+                          speed={12}
+                          onComplete={handleStreamComplete}
+                        />
+                      ) : step.content}
+                    </UserMessage>
+                  )}
+                  {step.type === "action" && (
+                    <ActionMessage>
+                      {isCurrentlyStreaming ? (
+                        <StreamingText
+                          text={step.content}
+                          speed={10}
+                          onComplete={handleStreamComplete}
+                        />
+                      ) : step.content}
+                    </ActionMessage>
+                  )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
       </ClaudeCodeDemo>

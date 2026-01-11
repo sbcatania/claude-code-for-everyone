@@ -7,8 +7,8 @@ export function Section01WhatIs() {
   return (
     <SectionWrapper
       number="01"
-      title="What is Claude Code?"
-      description="Claude Code is an AI that lives in your terminal and can actually DO things on your computer. Not just give you code to copy—it creates files, runs commands, and builds entire projects."
+      title="What is Claude Code? Codex?"
+      description="Claude Code is an AI coding agents that lives in your terminal. Because your terminal can do almost anything on your computer and these coding agents can use your terminal, Claude Code can do almost anything on your computer"
     >
       <ChatComparison />
     </SectionWrapper>

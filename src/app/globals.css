@@ -157,7 +157,7 @@ html {
   display: inline-block;
   width: 1ch;
   height: 1.2em;
-  background: var(--accent);
+  background: white;
   animation: cursor-blink 1s step-end infinite;
   vertical-align: middle;
   flex-shrink: 0;
