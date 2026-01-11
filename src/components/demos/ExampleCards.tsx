@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClaudeCodeDemo, UserMessage, ClaudeMessage, ActionMessage } from "../ui/ClaudeCodeDemo";
+import { StreamingText } from "../ui/StreamingText";
 
 const examples = [
   {
@@ -47,27 +48,34 @@ const examples = [
 export function ExampleCards() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [playingStep, setPlayingStep] = useState(0);
+  const [streamingStep, setStreamingStep] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleStreamComplete = (exampleId: string, stepIndex: number) => {
+    const example = examples.find(e => e.id === exampleId);
+    if (!example) return;
+
+    // Move to next step after streaming completes
+    setTimeout(() => {
+      if (stepIndex + 1 < example.steps.length) {
+        setPlayingStep(stepIndex + 1);
+        setStreamingStep(stepIndex + 1);
+      }
+    }, 200);
+  };
 
   const handleExpand = (id: string) => {
     if (expanded === id) {
       setExpanded(null);
       setPlayingStep(0);
+      setStreamingStep(0);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     } else {
       setExpanded(id);
       setPlayingStep(0);
-      // Auto-play through steps
-      const example = examples.find(e => e.id === id);
-      if (example) {
-        let step = 0;
-        const interval = setInterval(() => {
-          step++;
-          if (step >= example.steps.length) {
-            clearInterval(interval);
-          } else {
-            setPlayingStep(step);
-          }
-        }, 800);
-      }
+      setStreamingStep(0);
     }
   };
 
@@ -127,32 +135,46 @@ export function ExampleCards() {
                     {/* Claude's response with steps */}
                     <ClaudeMessage>
                       <div className="space-y-2">
-                        {example.steps.map((step, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{
-                              opacity: index <= playingStep ? 1 : 0.3,
-                              x: 0
-                            }}
-                            transition={{ duration: 0.3, delay: index * 0.1 }}
-                            className="flex items-start gap-2"
-                          >
-                            <div className={`w-4 h-4 flex items-center justify-center text-xs flex-shrink-0 ${
-                              index <= playingStep ? "bg-accent-green text-background" : "bg-border text-muted"
-                            }`}>
-                              {index <= playingStep ? "✓" : index + 1}
-                            </div>
-                            <div>
-                              <span className={`text-sm font-medium ${
-                                index <= playingStep ? "text-accent-green" : "text-muted"
+                        {example.steps.map((step, index) => {
+                          const isCurrentlyStreaming = expanded === example.id && streamingStep === index && index <= playingStep;
+
+                          return (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{
+                                opacity: index <= playingStep ? 1 : 0.3,
+                                x: 0
+                              }}
+                              transition={{ duration: 0.3, delay: index * 0.1 }}
+                              className="flex items-start gap-2"
+                            >
+                              <div className={`w-4 h-4 flex items-center justify-center text-xs flex-shrink-0 ${
+                                index <= playingStep ? "bg-accent-green text-background" : "bg-border text-muted"
                               }`}>
-                                {step.action}
-                              </span>
-                              <span className="text-sm text-muted ml-1">{step.detail}</span>
-                            </div>
-                          </motion.div>
-                        ))}
+                                {index <= playingStep ? "✓" : index + 1}
+                              </div>
+                              <div>
+                                <span className={`text-sm font-medium ${
+                                  index <= playingStep ? "text-accent-green" : "text-muted"
+                                }`}>
+                                  {step.action}
+                                </span>
+                                <span className="text-sm text-muted ml-1">
+                                  {isCurrentlyStreaming ? (
+                                    <StreamingText
+                                      text={step.detail}
+                                      speed={12}
+                                      onComplete={() => handleStreamComplete(example.id, index)}
+                                    />
+                                  ) : (
+                                    index <= playingStep ? step.detail : ""
+                                  )}
+                                </span>
+                              </div>
+                            </motion.div>
+                          );
+                        })}
                       </div>
                     </ClaudeMessage>
                   </ClaudeCodeDemo>

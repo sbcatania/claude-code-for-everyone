@@ -33,7 +33,7 @@ export default function Home() {
               Claude Code for Everyone
             </h1>
             <p className="section-description mb-8">
-              Like DMing your computer. The terminal is your computer. Claude Code lets you chat with it naturally—so you can do anything a traditional AI can do, plus actually use your machine.
+              Claude Code and Codex let you DM your computer. It doesn't have to be scary.
             </p>
 
             {/* Animated terminal demo */}
@@ -50,8 +50,8 @@ export default function Home() {
             >
               <p className="text-sm text-muted">
                 <span className="text-accent">This site was built with Claude Code.</span>{" "}
-                I was in a meeting, took some notes, then pasted a screenshot of my Slack DM plus a 3-sentence prompt.
-                An hour later: this whole tutorial. I had no idea how to deploy it, so I asked Claude—it walked me through Vercel step by step.
+                I thought of this site while in a meeting and DM'd some colleagues about it. I pasted a screenshot of my Slack DM plus a 3-sentence prompt.
+                10 minutes later, Claude Code produced this entire site. I had no idea how to deploy it, so I asked Claude—it walked me through setting up Vercel auto deployments step by step. That took 5 more minutes.
               </p>
             </motion.div>
 

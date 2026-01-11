@@ -8,7 +8,7 @@ export function Section03Talking() {
     <SectionWrapper
       number="03"
       title="Talking to Claude Code"
-      description="You don't need perfect technical language. Be vague! Claude will ask clarifying questions or just try something. It's like working with a smart colleague who fills in the gaps."
+      description="You can talk to Claude Code just like you talk to ChatGPT or any other AI. You DO NOT need perfect technical language. Be vague! Claude will ask clarifying questions or just try something. And unlike ChatGPT or other tools, Claude Code can actually do things, not just give you an answer."
     >
       <VagueVsSpecific />
     </SectionWrapper>

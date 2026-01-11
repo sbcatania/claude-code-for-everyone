@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { StreamingText } from "../ui/StreamingText";
 
 const demoConversation = [
   {
@@ -28,26 +29,33 @@ const demoConversation = [
 
 export function HeroTerminal() {
   const [visibleLines, setVisibleLines] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
+  const [streamingLine, setStreamingLine] = useState(-1);
   const [hasFinished, setHasFinished] = useState(false);
 
-  useEffect(() => {
-    if (hasFinished) return; // Don't replay
-
-    const timer = setTimeout(() => {
-      if (visibleLines < demoConversation.length) {
-        setIsTyping(true);
-        setTimeout(() => {
-          setVisibleLines(v => v + 1);
-          setIsTyping(false);
-        }, 300);
+  const handleStreamComplete = (lineIndex: number) => {
+    // When streaming completes, show next line after a brief pause
+    setTimeout(() => {
+      if (lineIndex + 1 < demoConversation.length) {
+        setVisibleLines(lineIndex + 2);
+        setStreamingLine(lineIndex + 1);
       } else {
         setHasFinished(true);
+        setStreamingLine(-1);
       }
-    }, visibleLines === 0 ? 1000 : 1200);
+    }, 400);
+  };
+
+  useEffect(() => {
+    if (hasFinished) return;
+
+    // Start the first line after initial delay
+    const timer = setTimeout(() => {
+      setVisibleLines(1);
+      setStreamingLine(0);
+    }, 1000);
 
     return () => clearTimeout(timer);
-  }, [visibleLines, hasFinished]);
+  }, [hasFinished]);
 
   return (
     <motion.div
@@ -68,54 +76,78 @@ export function HeroTerminal() {
         {/* Terminal content */}
         <div className="p-4 min-h-[220px] overflow-hidden text-sm">
           <AnimatePresence>
-            {demoConversation.slice(0, visibleLines).map((line, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="mb-2"
-              >
-                {line.type === "user" && (
-                  <div>
-                    <div className="text-accent-green">you:</div>
-                    <div className="text-foreground">{line.content}</div>
-                  </div>
-                )}
-                {line.type === "claude" && (
-                  <div>
-                    <div className="text-accent">claude:</div>
-                    <div className="text-muted">{line.content}</div>
-                  </div>
-                )}
-                {line.type === "action" && (
-                  <div className="flex items-center gap-2 text-accent-green text-xs ml-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent-green flex-shrink-0" />
-                    <span>{line.content}</span>
-                  </div>
-                )}
-                {line.type === "crafting" && (
-                  <div className="flex items-center gap-2 text-muted text-xs ml-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-pulse flex-shrink-0" />
-                    <span>{line.content}</span>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+            {demoConversation.slice(0, visibleLines).map((line, index) => {
+              const isStreaming = streamingLine === index;
+              const isStreamable = line.type !== "user"; // Don't stream user messages
 
-          {/* Typing indicator */}
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-1 text-muted ml-4"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-muted animate-pulse" />
-              <span className="w-1.5 h-1.5 rounded-full bg-muted animate-pulse" style={{ animationDelay: "0.2s" }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-muted animate-pulse" style={{ animationDelay: "0.4s" }} />
-            </motion.div>
-          )}
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mb-2"
+                >
+                  {line.type === "user" && (
+                    <div>
+                      <div className="text-accent-green">you:</div>
+                      <div className="text-foreground">
+                        {isStreaming ? (
+                          <StreamingText
+                            text={line.content}
+                            speed={15}
+                            onComplete={() => handleStreamComplete(index)}
+                          />
+                        ) : line.content}
+                      </div>
+                    </div>
+                  )}
+                  {line.type === "claude" && (
+                    <div>
+                      <div className="text-accent">claude:</div>
+                      <div className="text-muted">
+                        {isStreaming && isStreamable ? (
+                          <StreamingText
+                            text={line.content}
+                            speed={15}
+                            onComplete={() => handleStreamComplete(index)}
+                          />
+                        ) : line.content}
+                      </div>
+                    </div>
+                  )}
+                  {line.type === "action" && (
+                    <div className="flex items-center gap-2 text-accent-green text-xs ml-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-green flex-shrink-0" />
+                      <span>
+                        {isStreaming && isStreamable ? (
+                          <StreamingText
+                            text={line.content}
+                            speed={12}
+                            onComplete={() => handleStreamComplete(index)}
+                          />
+                        ) : line.content}
+                      </span>
+                    </div>
+                  )}
+                  {line.type === "crafting" && (
+                    <div className="flex items-center gap-2 text-muted text-xs ml-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-muted animate-pulse flex-shrink-0" />
+                      <span>
+                        {isStreaming && isStreamable ? (
+                          <StreamingText
+                            text={line.content}
+                            speed={12}
+                            onComplete={() => handleStreamComplete(index)}
+                          />
+                        ) : line.content}
+                      </span>
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
 
           {/* Status line - inside terminal content, not window chrome */}
           <div className="mt-6 pt-4 border-t border-border/50">
