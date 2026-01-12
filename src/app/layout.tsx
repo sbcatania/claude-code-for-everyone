@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/Providers";
 import { EditMode } from "@/components/EditMode";
 import "./globals.css";
@@ -34,6 +35,7 @@ export default function RootLayout({
           {children}
           {process.env.NODE_ENV === "development" && <EditMode />}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
