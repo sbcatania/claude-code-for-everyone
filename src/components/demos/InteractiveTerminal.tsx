@@ -97,7 +97,6 @@ export function InteractiveTerminal() {
       <Terminal
         placeholder="Type a command..."
         onSubmit={handleSubmit}
-        autoFocus
         initialLines={[
           { type: "output", content: "Welcome! Try the commands above." },
           { type: "output", content: "The terminal is always 'in' a folder. Right now you're in /Users/you" },
