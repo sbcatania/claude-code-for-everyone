@@ -34,7 +34,7 @@ export function Terminal({
   // Auto-type effect
   useEffect(() => {
     if (autoType && autoType.lines.length > 0) {
-      setIsTyping(true);
+      let timer: ReturnType<typeof setTimeout>;
       let currentIndex = 0;
       const delay = autoType.delay || 50;
 
@@ -56,10 +56,10 @@ export function Terminal({
                 return newLines;
               });
               charIndex++;
-              setTimeout(typeChar, delay);
+              timer = setTimeout(typeChar, delay);
             } else {
               currentIndex++;
-              setTimeout(typeNextLine, delay * 10);
+              timer = setTimeout(typeNextLine, delay * 10);
             }
           };
           typeChar();
@@ -68,7 +68,11 @@ export function Terminal({
         }
       };
 
-      typeNextLine();
+      timer = setTimeout(() => {
+        setIsTyping(true);
+        typeNextLine();
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [autoType]);
 
